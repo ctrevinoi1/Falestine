@@ -26,7 +26,7 @@ logger.remove()
 logger.add(lambda msg: print(msg, end=''), level="DEBUG")
 
 # Configure Gemini API
-genai.configure(api_key="x")
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 # Initialize the zero-shot classifier once at module level.
 zero_shot_classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
 
@@ -252,7 +252,9 @@ def scrape_google_news():
     two_days_ago = (datetime.datetime.now() - datetime.timedelta(days=2)).strftime("%Y-%m-%d")
     
     # You can store News API key in an environment variable, e.g. os.environ["NEWSAPI_KEY"]
-    NEWSAPI_KEY = os.environ.get("NEWSAPI_KEY", "b10ba26d3fef4f249fd8982eba0e0baa")
+    NEWSAPI_KEY = os.getenv("NEWSAPI_KEY")
+    if not NEWSAPI_KEY:
+        raise ValueError("NEWSAPI_KEY environment variable is not set.")
 
     for query in queries:
         # Example API call using the /everything endpoint
