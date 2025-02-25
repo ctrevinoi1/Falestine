@@ -10,7 +10,7 @@ import nltk
 import requests
 from transformers import pipeline
 import pandas as pd
-import numpy as np
+
 
 # Initialize the blueprint
 dashboard_bp = Blueprint(
