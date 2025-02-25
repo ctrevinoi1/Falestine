@@ -16,4 +16,5 @@ def home():
     return redirect(url_for('walkthrough.index'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    from gunicorn.app.wsgiapp import run
+    run()

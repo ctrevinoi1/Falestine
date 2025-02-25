@@ -8,3 +8,4 @@ requests
 transformers
 pandas
 numpy
+gunicorn
