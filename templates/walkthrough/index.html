@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Palestine Narrative Experience</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- GSAP for animation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+
+  <!-- Add Leaflet library references here -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <!-- Removed inline <style> and replaced with external CSS -->
+  <link rel="stylesheet" href="static/walkthrough/css/styles.css">
+</head>
+<body>
+  <!-- Full-screen overlay with the opening quote -->
+  <div id="overlay">
+    <h1>"We are a nation threatened by disappearance.<br>
+    —'Isa and Yusuf al-'Isa, Filastin, May 7, 1914" 🍉</h1>
+  </div>
+
+  <!-- Narrative container holding the eight modules -->
+  <div id="narrative">
+    <!-- Module 1: The Balfour Declaration -->
+    <div class="module" id="module-1">
+      <h2>Stage 1: The Balfour Declaration 🇵🇸</h2>
+      <p>
+        In <strong>1917</strong>, the British government issued the <em>Balfour Declaration</em>, proclaiming support for a national home for the Jewish people in Palestine. This bold proclamation <strong>ignored</strong> the indigenous Arab majority and set in motion a century-long struggle over land and identity. <em>The seeds of displacement were sown.</em>
+      </p>
+      <!-- Sources Section (for modules with multiple sources) -->
+      <div class="sources-section">
+        <button class="sources-btn" onclick="toggleSources(this)">Sources</button>
+        <div class="sources-dropdown" style="display: none;">
+          <ul>
+            <li><a href="https://www.un.org/unispal/document/auto-insert-193242/?utm_source=chatgpt.com" target="_blank">UN Document</a></li>
+            <li><a href="https://www.un.org/unispal/100-years-of-the-balfour-declaration-and-its-impact-on-the-palestinian-people/?utm_source=chatgpt.com" target="_blank">100 Years of the Balfour Declaration</a></li>
+          </ul>
+        </div>
+      </div>
+      <button class="next-btn" onclick="showNextModule(2)">Next 🍉</button>
+    </div>
+
+    <!-- Module 2: The British Mandate and Early Zionist Colonization -->
+    <div class="module" id="module-2">
+      <h2>Stage 2: British Mandate & Early Colonization 🇵🇸</h2>
+      <p>
+        With the establishment of the British Mandate in <strong>1922</strong>, policies began to favor Jewish immigration and large-scale land acquisition. Over the following years, early Zionist settlers transformed the landscape—altering demographics and economics alike. <span style="color: #e60026;"><strong>The groundwork for a new colonial order was laid.</strong></span>
+      </p>
+      <!-- Sources Section (for modules with a single source) -->
+      <div class="sources-section">
+        <button class="sources-btn single" onclick="window.open('https://digitallibrary.un.org/record/829707?utm_source=chatgpt.com&v=pdf', '_blank')">Source</button>
+      </div>
+      <button class="next-btn" onclick="showNextModule(3)">Next 🍉</button>
+    </div>
+
+    <!-- Module 3: The Arab Revolt -->
+    <div class="module" id="module-3">
+      <h2>Stage 3: The Arab Revolt (1936–1939) 🇵🇸</h2>
+      <p>
+        As land expropriation accelerated, Palestinians rose up in a massive revolt between <strong>1936 and 1939</strong>. Facing brutal suppression, this uprising exposed the harsh realities of colonial rule and the desperate struggle to preserve identity. <em>Resistance became a battle cry for survival.</em>
+      </p>
+      <!-- Sources Section (for modules with a single source) -->
+      <div class="sources-section">
+        <button class="sources-btn single" onclick="window.open('https://digitallibrary.un.org/record/77013/files/ST_SG_SER.F_1%5EPartI%5E-EN.pdf?utm_source=chatgpt.com', '_blank')">Source</button>
+      </div>
+      <button class="next-btn" onclick="showNextModule(4)">Next 🍉</button>
+      <button class="flyover-btn" onclick="playFlyoverAnimation()">Play Flyover Animation</button>
+    </div>
+
+    <!-- Module 4: The UN Partition and the Nakba -->
+    <div class="module" id="module-4">
+      <h2>Stage 4: UN Partition & the Nakba (1947–1948) 🇵🇸</h2>
+      <p>
+        In the tumultuous years of <strong>1947–1948</strong>, the United Nations proposed a partition plan that led to violent conflict and the catastrophic <strong>Nakba</strong>—the mass displacement of over <em>720,000 Palestinians</em>. The map of Palestine was redrawn, and a people were uprooted from their ancestral lands.
+      </p>
+      <!-- Sources Section (for modules with multiple sources) -->
+      <div class="sources-section">
+        <button class="sources-btn" onclick="toggleSources(this)">Sources</button>
+        <div class="sources-dropdown" style="display: none;">
+          <ul>
+            <li><a href="https://unispal.un.org/pdfs/DPI2499.pdf?utm_source=chatgpt.com" target="_blank">UN Partition Plan</a></li>
+            <li><a href="https://www.un.org/unispal/document/auto-insert-202101/?utm_source=chatgpt.com" target="_blank">Nakba Documentation</a></li>
+          </ul>
+        </div>
+      </div>
+      <button class="next-btn" onclick="showNextModule(5)">Next 🍉</button>
+    </div>
+
+    <!-- Module 5: Post-Nakba and the Consolidation of Israeli Statehood -->
+    <div class="module" id="module-5">
+      <h2>Stage 5: Post-Nakba & State Consolidation (1948–1967) 🇵🇸</h2>
+      <p>
+        After the Nakba, the newly declared state of Israel consolidated its territorial gains and institutional power. Meanwhile, the Palestinian community became fragmented—confined to refugee camps and divided enclaves. <strong>The struggle for dignity and statehood intensified.</strong>
+      </p>
+      <!-- Sources Section (for modules with multiple sources) -->
+      <div class="sources-section">
+        <button class="sources-btn" onclick="toggleSources(this)">Sources</button>
+        <div class="sources-dropdown" style="display: none;">
+          <ul>
+            <li><a href="https://www.unrwa.org/userfiles/201006109359.pdf?utm_source=chatgpt.com" target="_blank">UNRWA Report</a></li>
+            <li><a href="https://www.unrwa.org/newsroom/videos/palestine-refugees-and-unrwa-history-displacement-dispossession-and-hope?utm_source=chatgpt.com" target="_blank">UNRWA Video</a></li>
+          </ul>
+        </div>
+      </div>
+      <button class="next-btn" onclick="showNextModule(6)">Next 🍉</button>
+    </div>
+
+    <!-- Module 6: The 1967 War and the Onset of Occupation -->
+    <div class="module" id="module-6">
+      <h2>Stage 6: The 1967 War & Occupation 🇵🇸</h2>
+      <p>
+        The <strong>Six-Day War of 1967</strong> dramatically altered the regional map. Israel's occupation of the West Bank, Gaza, and East Jerusalem marked the beginning of a prolonged period of military control and further displacement. <em>The land continued to shrink.</em>
+      </p>
+      <!-- Sources Section (for modules with multiple sources) -->
+      <div class="sources-section">
+        <button class="sources-btn" onclick="toggleSources(this)">Sources</button>
+        <div class="sources-dropdown" style="display: none;">
+          <ul>
+            <li><a href="https://www.un.org/sg/en/content/sg/statement/2017-06-05/statement-of-the-secretary-general-the-occasion-of-the-anniversary-of-the-1967-arab-israeli-war-and-the-50-years-of-israeli-occupation-of-the-palestinian-territory?utm_source=chatgpt.com" target="_blank">UN Secretary-General Statement</a></li>
+            <li><a href="https://www.unrwa.org/newsroom/official-statements/statement-unrwa-commissioner-general-half-century-occupation?utm_source=chatgpt.com" target="_blank">UNRWA Commissioner-General Statement</a></li>
+          </ul>
+        </div>
+      </div>
+      <button class="next-btn" onclick="showNextModule(7)">Next 🍉</button>
+    </div>
+
+    <!-- Module 7: International Involvement and Peace Efforts -->
+    <div class="module" id="module-7">
+      <h2>Stage 7: International Involvement & Peace Efforts 🇵🇸</h2>
+      <p>
+        In the latter half of the 20th century, global powers and diplomatic bodies intervened with multiple peace initiatives. However, these efforts often deepened existing inequalities and left many grievances unaddressed. The international bodies of the time, spearheaded by the British and US superpowers, protected the violent Zionist movement at every turn, perpetuating the apartheid state of Israel. <span style="color: #e60026;"><strong>Diplomacy and power collided in a maze of injustice.</strong></span>
+      </p>
+      <!-- Sources Section (for modules with multiple sources) -->
+      <div class="sources-section">
+        <button class="sources-btn" onclick="toggleSources(this)">Sources</button>
+        <div class="sources-dropdown" style="display: none;">
+          <ul>
+            <li><a href="https://press.un.org/en/2018/sc13213.doc.htm" target="_blank">UN Press Release</a></li>
+            <li><a href="https://dppa.un.org/en/middle-east-peace-process?utm_source=chatgpt.com" target="_blank">Middle East Peace Process</a></li>
+          </ul>
+        </div>
+      </div>
+      <button class="next-btn" onclick="showNextModule(8)">Next 🍉</button>
+    </div>
+
+    <!-- Module 8: Contemporary Conflict (2000–Present) -->
+    <div class="module" id="module-8">
+      <h2>Stage 8: Contemporary Conflict (2000–Present) 🇵🇸</h2>
+      <p>
+        Today, Palestinians endure a brutal and sadistic genocide imposed by Israeli settler terrorists. The ongoing atrocities highlight the severe violations of human rights and the urgent need for international intervention. The struggle for justice and the preservation of Palestinian identity and sovereignty is more critical than ever.
+      </p>
+      <!-- Sources Section (for modules with multiple sources) -->
+      <div class="sources-section">
+        <button class="sources-btn" onclick="toggleSources(this)">Sources</button>
+        <div class="sources-dropdown" style="display: none;">
+          <ul>
+            <li><a href="https://www.amnesty.org/en/latest/news/2024/12/amnesty-international-concludes-israel-is-committing-genocide-against-palestinians-in-gaza/?utm_source=chatgpt.com" target="_blank">Amnesty International Report</a></li>
+            <li><a href="https://www.amnesty.org/en/documents/mde15/8668/2024/en/?utm_source=chatgpt.com" target="_blank">Amnesty International Document</a></li>
+          </ul>
+        </div>
+      </div>
+      <button class="next-btn" onclick="showEndMessage(); setTimeout(finishWalkthrough, 2000)">Finish 🍉</button>
+    </div>
+
+    <!-- End message -->
+    <div id="end-message">
+      <p><strong>Thank you for joining this immersive journey.</strong></p>
+      <p><em>The struggle, the history, and the hope continue...</em> 🇵🇸🍉</p>
+    </div>
+  </div>
+  <div id = "map-container">
+    <div id="map"></div>
+    </div>
+
+<script src="static/walkthrough/js/scripts.js"></script>
+<script>
+  function finishWalkthrough() {
+    gsap.to("body", { duration: 1, opacity: 0, onComplete: function() {
+      window.location.href = "/dashboard";
+    }});
+  }
+</script>
+</body>
+</html>

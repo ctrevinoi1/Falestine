@@ -1,0 +1,10 @@
+flask
+google-generativeai
+newspaper3k
+chromadb
+loguru
+nltk
+requests
+transformers
+pandas
+numpy

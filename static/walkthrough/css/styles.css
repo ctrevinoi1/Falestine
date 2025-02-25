@@ -1,0 +1,209 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background-color: #fff;
+  overflow-x: hidden;
+}
+
+/* Overlay styling */
+#overlay {
+  position: fixed;
+  top: 0; 
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+#overlay h1 {
+  color: #fff;
+  font-size: 2.5em;
+  text-align: center;
+  padding: 20px;
+  line-height: 1.4;
+}
+
+/* Narrative container */
+#narrative {
+  opacity: 0;
+  padding: 50px;
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.module {
+  margin-bottom: 50px;
+  padding: 30px;
+  background: #f9f9f9;
+  border-left: 8px solid #e60026; /* red accent */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.module h2 {
+  margin-top: 0;
+  color: #006400; /* dark green */
+}
+.module p {
+  font-size: 1.1em;
+  line-height: 1.6;
+  color: #333;
+}
+.module p strong {
+  color: #e60026; /* red emphasis */
+}
+.module p em {
+  color: #006400; /* dark green emphasis */
+}
+
+.next-btn {
+  background-color: #000;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 1em;
+  margin-top: 20px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+.next-btn:hover {
+  background-color: #333;
+}
+
+/* End message styling */
+#end-message {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 1.5em;
+  color: #006400;
+  display: none;
+} 
+/* Ensure the map and its container have a defined size */
+#map-container {
+    position: relative;
+    width: 100%;
+    height: 450px; /* Or any height you prefer */
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+/* Popup customization for Module 3 (and any other popups we want to style similarly) */
+.palestinian-popup .leaflet-popup-content-wrapper {
+  /* Black background, white text, red border: */
+  background-color: #000000;
+  color: #ffffff;
+  border: 2px solid #e60026;
+  border-radius: 5px;
+  /* Provide some padding so text isn’t flush against edges */
+  padding: 12px;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* Change the popup tip color to green or red for a nice accent */
+.palestinian-popup .leaflet-popup-tip,
+.palestinian-popup .leaflet-popup-tip-container {
+  background: #007B46; /* Darker green accent */
+}
+
+/* Optionally style anchors or other elements within the popup */
+.palestinian-popup .leaflet-popup-content a {
+  color: #e60026; /* link color in popup */
+  text-decoration: underline;
+}
+
+/* Pulsing marker style */
+.pulse-marker {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.5);
+    opacity: 0.5;
+  }
+}
+/* Style for popups in module 3. */
+.palestinian-popup .leaflet-popup-content-wrapper {
+    background-color: #000;
+    color: #fff; 
+    border: 2px solid #e60026;
+    border-radius: 8px; 
+}
+
+.palestinian-popup .leaflet-popup-tip {
+    background-color: #000;
+    border-top-color: #e60026;
+}
+.flyover-btn {
+  background-color: #000;
+  color: #fff;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.flyover-btn:hover {
+  background-color: #333;
+}
+.sources-section {
+  margin-top: 20px;
+}
+
+.sources-btn {
+  background-color: transparent;
+  border: 1px solid #e60026;
+  color: #e60026;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.sources-btn:hover {
+  background-color: #e60026;
+  color: #fff;
+}
+
+.sources-dropdown {
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 4px;
+  background: #f9f9f9;
+}
+
+.sources-dropdown ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sources-dropdown li {
+  margin-bottom: 5px;
+}
+
+.sources-dropdown li a {
+  color: #006400;
+  text-decoration: none;
+}
+
+.sources-dropdown li a:hover {
+  text-decoration: underline;
+}

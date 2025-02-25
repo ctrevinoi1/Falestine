@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FreeFalestine Dashboard</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Global & Module CSS -->
+  <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/main.css') }}">
+  <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/map.css') }}">
+  <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/news.css') }}">
+  <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/graphs.css') }}">
+  <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/livestream.css') }}">
+  <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/resources.css') }}">
+  <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/bulletin.css') }}">
+  
+  <!-- Leaflet & Plugins CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.awesome-markers@2.0.4/dist/leaflet.awesome-markers.css">
+  
+  <style>
+    /* Dashboard two-column layout */
+    .dashboard {
+      display: flex;
+      height: 100vh;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: #f0f0f0;
+    }
+    #map-container {
+      flex: 2;
+      border-right: 1px solid #ccc;
+      background-color: #e9ecef;
+    }
+    #bulletin-container {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background-color: #ffffff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    #bulletin-output {
+      background: #f9f9f9;
+      padding: 15px;
+      border: 1px solid #ddd;
+      margin-top: 15px;
+      white-space: pre-wrap;
+      border-radius: 5px;
+    }
+    #generate-button, #fetch-news {
+      background: #007BFF;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      font-size: 1em;
+    }
+    #generate-button:hover, #fetch-news:hover {
+      background: #0056b3;
+    }
+    h2 {
+      color: #333;
+      font-size: 1.8em;
+      margin-bottom: 10px;
+    }
+    #news-section {
+      background: #ffffff;
+      padding: 20px;
+      border-top: 1px solid #ddd;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    #news-articles {
+      max-height: 40vh;
+      overflow-y: auto;
+      margin-top: 20px;
+      background-color: #f9f9f9;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <div id="map-container">
+      <div id="map" style="height: 100%;"></div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; flex: 1;">
+      <div id="bulletin-container">
+        <h2>News Bulletin</h2>
+        <button id="generate-button">Generate Bulletin</button>
+        <div id="bulletin-output">
+          <!-- The generated bulletin will be displayed here -->
+        </div>
+      </div>
+
+      <div id="news-section">
+        <h2>News Feed</h2>
+        <div id="news-filters">
+          <button class="filter-btn" data-category="pro-palestinian/human rights">🇵🇸 Pro-Palestinian</button>
+          <button class="filter-btn" data-category="neutral">⚪ Neutral</button>
+          <button class="filter-btn" data-category="pro-israeli">🇮🇱 Pro-Israeli</button>
+          <button class="filter-btn" data-category="genocidal">💀 Genocidal</button>
+          <button class="filter-btn" data-category="all">Show All</button>
+        </div>
+        <button id="fetch-news">Fetch News</button>
+        <div id="news-articles">
+          <!-- Articles will appear here, most recent first -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add our new graphs container below the dashboard modules -->
+  <div id="graphs-container" style="padding: 20px;">
+    <h2>Data Visualizations</h2>
+    <div style="max-width: 800px; margin-bottom: 50px;">
+      <canvas id="fatalitiesBarChart"></canvas>
+    </div>
+    <div style="max-width: 800px; margin-bottom: 50px;">
+      <canvas id="fatalitiesLineChart"></canvas>
+    </div>
+  </div>
+  
+  <!-- Library Scripts -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+  <script src="https://unpkg.com/leaflet.awesome-markers@2.0.4/dist/leaflet.awesome-markers.js"></script>
+  <script src="https://unpkg.com/papaparse@5.3.2/papaparse.min.js"></script>
+  
+  <!-- Add Chart.js for easy chart rendering (if not already included) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- date-fns and the Chart.js adapter -->
+  <script src="https://cdn.jsdelivr.net/npm/date-fns"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
+  <!-- Module Scripts -->
+  <script src="{{ url_for('dashboard.static', filename='js/map.js') }}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="{{ url_for('dashboard.static', filename='js/bulletin.js') }}"></script>
+  <script src="{{ url_for('dashboard.static', filename='js/news.js') }}"></script>
+  <script src="{{ url_for('dashboard.static', filename='js/graphs.js') }}"></script> <!-- Ensure graphs.js is loaded last or after Chart.js -->
+
+  <!-- GSAP Animation Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      gsap.fromTo("body", { opacity: 0 }, { opacity: 1, duration: 1 });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+/* graphs.css */
+
+#graphs-container {
+    margin-top: 20px;
+}
+
+#graphs-container h2 {
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Optional: Style the canvas elements if needed */
+#fatalitiesBarChart, #fatalitiesLineChart {
+    /* Add styles here if desired */
+    margin-bottom: 30px; /* Add some spacing between charts */
+}
+
+/* Optionally add some spacing or styling specifically for our new daily chart */
+#fatalitiesBarChart {
+    max-width: 800px;
+    max-height: 500px;
+    /* margin: 0 auto;  center it if desired */
+}

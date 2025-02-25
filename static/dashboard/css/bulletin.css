@@ -1,0 +1,44 @@
+/* Bulletin container styling */
+#bulletin-container {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+#bulletin-container h2 {
+  font-size: 1.5em;
+  margin-bottom: 1em;
+  font-weight: bold;
+  color: #3d3d3d;
+}
+
+/* Bulletin output area */
+#bulletin-output {
+  background-color: #fafafa;
+  padding: 20px;
+  border: 1px solid #ddd;
+}
+
+/* Markdown heading styles */
+#bulletin-output h1, 
+#bulletin-output h2, 
+#bulletin-output h3 {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* Paragraph and list spacing */
+#bulletin-output p {
+  margin-bottom: 1em;
+  line-height: 1.5;
+}
+
+#bulletin-output ul,
+#bulletin-output ol {
+  padding-left: 2em;
+  margin-bottom: 1em;
+}
+
+/* Bold styling */
+#bulletin-output strong {
+  font-weight: bold;
+}
