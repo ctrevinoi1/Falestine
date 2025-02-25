@@ -8,7 +8,6 @@ requests
 transformers
 pandas
 numpy
-gunicorn
 lxml_html_clean
 torch
 torchvision
