@@ -183,6 +183,16 @@
         alert('Error saving API keys: ' + err);
       });
     });
+
+    // When the user closes the page, clear API keys from the session
+    window.addEventListener('unload', function() {
+      const url = '/dashboard/clear_api_keys';
+      if(navigator.sendBeacon){
+        navigator.sendBeacon(url);
+      } else {
+        fetch(url, { method: 'POST', keepalive: true });
+      }
+    });
   </script>
 </body>
 </html>

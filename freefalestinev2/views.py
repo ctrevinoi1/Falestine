@@ -143,12 +143,20 @@ def get_historical_context():
 
 @dashboard_bp.route('/set_api_keys', methods=['POST'])
 def set_api_keys():
+    # Set session to be non-permanent so that it is cleared on browser close
+    session.permanent = False
     data = request.get_json()
     gemini_key = data.get('gemini_key')
     newsapi_key = data.get('newsapi_key')
     session['GEMINI_API_KEY'] = gemini_key
     session['NEWSAPI_KEY'] = newsapi_key
     return jsonify({'message': 'API keys saved successfully'}), 200
+
+@dashboard_bp.route('/clear_api_keys', methods=['POST'])
+def clear_api_keys():
+    session.pop('GEMINI_API_KEY', None)
+    session.pop('NEWSAPI_KEY', None)
+    return jsonify({'message': 'API keys cleared successfully'}), 200
 
 @dashboard_bp.route('/generate_bulletin', methods=['POST'])
 def generate_bulletin():
