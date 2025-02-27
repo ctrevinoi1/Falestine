@@ -312,7 +312,7 @@ def scrape_google_news():
         all_articles.sort(key=lambda x: x["publish_date"], reverse=True)
     except Exception as sort_err:
         logger.warning(f"Error sorting articles: {sort_err}")
-    all_articles = all_articles[:50]
+    all_articles = all_articles[:10]
 
     logger.debug(f"Total articles fetched from News API: {len(all_articles)}")
 
