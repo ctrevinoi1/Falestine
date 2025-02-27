@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, request, send_from_directory
+from flask import Blueprint, render_template, jsonify, request, send_from_directory, session
 import datetime
 import uuid
 import os
@@ -141,9 +141,26 @@ def get_historical_context():
     logger.debug("Historical context retrieved successfully.")
     return context
 
+@dashboard_bp.route('/set_api_keys', methods=['POST'])
+def set_api_keys():
+    data = request.get_json()
+    gemini_key = data.get('gemini_key')
+    newsapi_key = data.get('newsapi_key')
+    session['GEMINI_API_KEY'] = gemini_key
+    session['NEWSAPI_KEY'] = newsapi_key
+    return jsonify({'message': 'API keys saved successfully'}), 200
+
 @dashboard_bp.route('/generate_bulletin', methods=['POST'])
 def generate_bulletin():
     logger.debug("Generating bulletin.")
+    # Configure Gemini API using session key if available
+    gemini_key = session.get('GEMINI_API_KEY', os.getenv('GEMINI_API_KEY'))
+    if gemini_key:
+        genai.configure(api_key=gemini_key)
+    else:
+        logger.error("Gemini API key not set.")
+        return jsonify({'error': 'Gemini API key not set.'}), 400
+
     # Scrape current articles
     articles = scrape_articles()
     context_text = ""
@@ -251,14 +268,12 @@ def scrape_google_news():
     # We'll fetch everything from the last 2 days
     two_days_ago = (datetime.datetime.now() - datetime.timedelta(days=2)).strftime("%Y-%m-%d")
     
-    # You can store News API key in an environment variable, e.g. os.environ["NEWSAPI_KEY"]
-    NEWSAPI_KEY = os.getenv("NEWSAPI_KEY")
+    # Use NEWSAPI key from session if present
+    NEWSAPI_KEY = session.get('NEWSAPI_KEY', os.getenv('NEWSAPI_KEY'))
     if not NEWSAPI_KEY:
-        raise ValueError("NEWSAPI_KEY environment variable is not set.")
+        raise ValueError("NEWSAPI_KEY is not set. Please configure it.")
 
     for query in queries:
-        # Example API call using the /everything endpoint
-        # Docs: https://newsapi.org/docs/endpoints/everything
         url = (
             "https://newsapi.org/v2/everything?"
             f"q={query}&"
@@ -271,16 +286,11 @@ def scrape_google_news():
             response = requests.get(url, timeout=10)
             data = response.json()
             articles_from_api = data.get("articles", [])
-            # Convert each item to our format
             for item in articles_from_api:
-                # Attempt to parse a publish date; fallback if missing
                 pub_date = item.get("publishedAt", datetime.datetime.now().isoformat())
-                
                 content_text = item.get("description", "") or ""
-                # optional: also append 'content' if provided:
                 if item.get("content", None):
                     content_text += f" {item['content']}"
-                
                 article = {
                     "title": item.get("title", "Untitled"),
                     "url": item.get("url", ""),
@@ -290,8 +300,6 @@ def scrape_google_news():
                 all_articles.append(article)
         except Exception as e:
             logger.error(f"Error fetching articles for query '{query}': {str(e)}")
-    
-    # Sort articles by date (descending) & limit to 50
     try:
         all_articles.sort(key=lambda x: x["publish_date"], reverse=True)
     except Exception as sort_err:
@@ -300,7 +308,6 @@ def scrape_google_news():
 
     logger.debug(f"Total articles fetched from News API: {len(all_articles)}")
 
-    # Classify each article using existing classify_article(...) logic
     for article in all_articles:
         classification = classify_article(article["content"])
         article["classification"] = classification
