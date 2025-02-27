@@ -4,154 +4,351 @@
   <title>FreeFalestine Dashboard</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <!-- Global & Module CSS -->
   <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/main.css') }}">
   <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/map.css') }}">
   <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/news.css') }}">
   <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/graphs.css') }}">
-  <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/livestream.css') }}">
-  <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/resources.css') }}">
+  <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/livestream.css') }}">  <!--  Keep this if you add livestream functionality later -->
+  <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/resources.css') }}"> <!-- Keep this if you add a resources section later -->
   <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/bulletin.css') }}">
   <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/apikeys.css') }}">
-  
+
   <!-- Leaflet & Plugins CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.awesome-markers@2.0.4/dist/leaflet.awesome-markers.css">
-  
-  <style>
-    /* Dashboard two-column layout */
-    .dashboard {
-      display: flex;
-      height: 100vh;
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      background-color: #f0f0f0;
-    }
-    #map-container {
-      flex: 2;
-      border-right: 1px solid #ccc;
-      background-color: #e9ecef;
-    }
-    #bulletin-container {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      background-color: #ffffff;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    #bulletin-output {
-      background: #f9f9f9;
-      padding: 15px;
-      border: 1px solid #ddd;
-      margin-top: 15px;
-      white-space: pre-wrap;
-      border-radius: 5px;
-    }
-    #generate-button, #fetch-news {
-      background: #007BFF;
-      color: #fff;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      font-size: 1em;
-    }
-    #generate-button:hover, #fetch-news:hover {
-      background: #0056b3;
-    }
-    h2 {
-      color: #333;
-      font-size: 1.8em;
-      margin-bottom: 10px;
-    }
-    #news-section {
-      background: #ffffff;
-      padding: 20px;
-      border-top: 1px solid #ddd;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    #news-articles {
-      max-height: 40vh;
-      overflow-y: auto;
-      margin-top: 20px;
-      background-color: #f9f9f9;
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
-  </style>
+
+  <!--  Font Awesome (optional, but good for icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        /*  RESET SOME DEFAULT STYLES  */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4; /* Light gray background */
+            color: #333; /* Dark gray text */
+        }
+
+        /*  DASHBOARD CONTAINER  */
+        .dashboard-container {
+            display: flex;
+            flex-direction: column; /* Stack modules vertically */
+            min-height: 100vh; /* Ensure it takes at least the full viewport height */
+        }
+
+        /*  HEADER  */
+        #dashboard-title {
+            text-align: center;
+            padding: 20px 0;
+            background: linear-gradient(90deg, #ce1126, #ffffff, #007a3d, #000000); /* Gradient background */
+            color: white;
+            border-bottom: 4px solid #000;
+        }
+      #dashboard-title h1 {
+          font-family: 'Arial Black', Gadget, sans-serif;
+          font-size: 2.5em;
+          margin: 0;
+          letter-spacing: 2px;
+          /* Create a striking text effect using background-clip */
+          background: -webkit-linear-gradient(#ce1126, #007a3d);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+      }
+
+        /* API CONFIGURATION */
+        #api-config {
+            background-color: #fff;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex; /* Use flexbox for layout */
+            align-items: center; /* Vertically center items */
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            gap: 10px; /* Spacing between items */
+        }
+
+        #api-config h3 {
+            font-size: 1.2em;
+            margin-right: 20px;
+            color: #333;
+        }
+        #api-config label {
+          display: inline-block;
+          margin-right: 10px;
+          font-weight: bold;
+        }
+
+        #api-config input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            flex-grow: 1; /* Allow inputs to grow */
+            max-width: 250px; /*  Limit input width  */
+        }
+
+        #save-api-keys {
+            background-color: #4CAF50; /* Green button */
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-left: auto; /* Push button to the right */
+        }
+
+        #save-api-keys:hover {
+            background-color: #367c39; /* Darker green on hover */
+        }
+
+
+        /* MAIN DASHBOARD AREA */
+        .dashboard {
+            display: flex;
+            flex-grow: 1; /* Allow the dashboard to fill remaining space */
+        }
+
+        /* MAP CONTAINER */
+        #map-container {
+            flex: 0 0 60%;  /*  60% width (adjust as needed)  */
+            border-right: 1px solid #ddd;
+            position: relative; /* For absolute positioning of loading indicator */
+        }
+
+        #map {
+            height: 100%; /* Full height of the container */
+            width: 100%;  /*  Full width of the container  */
+        }
+
+        /*  SIDEBAR (Bulletin and News)  */
+        #sidebar {
+            flex: 0 0 40%;  /* 40% width  */
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto; /*  Enable scrolling if content overflows  */
+        }
+
+        /* BULLETIN */
+        #bulletin-container, #news-section {
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        #bulletin-container h2, #news-section h2 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        #generate-button, #fetch-news {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 1em;
+        }
+
+        #generate-button:hover, #fetch-news:hover {
+            background-color: #0056b3;
+        }
+
+        #bulletin-output {
+            margin-top: 15px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            white-space: pre-wrap; /* Preserve line breaks */
+            min-height: 100px;   /*  Minimum height  */
+        }
+
+        /* NEWS SECTION */
+       #news-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;  /*  Space between buttons  */
+            margin-bottom: 10px;
+        }
+
+        .filter-btn {
+            background-color: #eee;
+            color: #333;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .filter-btn:hover {
+            background-color: #ddd;
+        }
+
+        #news-articles {
+            max-height: 40vh;  /*  Adjust as needed  */
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .news-article {
+          background: #fff;
+          padding: 20px;
+          margin-bottom: 20px;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .news-article h3 {
+          margin: 0 0 10px 0;
+          font-size: 1.5em;
+          font-weight: bold;
+          color: #3d3d3d;
+        }
+
+        /* GRAPHS */
+        #graphs-container {
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center; /* Center the charts */
+        }
+
+        #graphs-container h2 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+      #graphs-container canvas {
+        max-width: 100%;
+        margin: 0 auto 20px auto;
+      }
+
+        /*  LOADING INDICATOR (optional, but good UX)  */
+        .loading-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255,255,255,0.8);
+            padding: 10px;
+            border-radius: 4px;
+            z-index: 1000; /* Make sure it's on top */
+        }
+      /* Media query for smaller screens */
+      @media (max-width: 768px) {
+          .dashboard {
+              flex-direction: column; /* Stack map and sidebar vertically */
+          }
+
+          #map-container, #sidebar {
+              flex: 1 1 auto; /* Take full width */
+              width: 100%;  /*  Ensure full width  */
+              border-right: none; /* Remove border on smaller screens */
+          }
+          #api-config{
+            flex-direction: column;
+            align-items: stretch;
+          }
+        #api-config h3{
+          text-align: center;
+          margin-right: 0;
+        }
+        #api-config label{
+          margin-right: 0;
+        }
+        #api-config input{
+          max-width: none;
+        }
+        #save-api-keys{
+          margin-left: 0;
+        }
+
+      }
+    </style>
 </head>
 <body>
-  <!-- Dashboard Title -->
-  <div id="dashboard-title">
-    <h1>Gaza Unyielding: Live Witness to Genocide & Resistance</h1>
-  </div>
-
-  <!-- API Configuration Form -->
-  <div id="api-config">
-    <h3>API Configuration</h3>
-    <label for="gemini-key">Gemini API Key:</label>
-    <input type="text" id="gemini-key" placeholder="Enter Gemini API Key">
-    <label for="newsapi-key" style="margin-left:20px;">News API Key:</label>
-    <input type="text" id="newsapi-key" placeholder="Enter News API Key">
-    <button id="save-api-keys" style="margin-left:20px;">Save API Keys</button>
-  </div>
-
-  <div class="dashboard">
-    <div id="map-container">
-      <div id="map" style="height: 100%;"></div>
+  <div class="dashboard-container">
+    <div id="dashboard-title">
+        <h1>Gaza Unyielding: Live Witness to Genocide & Resistance</h1>
     </div>
 
-    <div style="display: flex; flex-direction: column; flex: 1;">
-      <div id="bulletin-container">
-        <h2>News Bulletin</h2>
-        <button id="generate-button">Generate Bulletin</button>
-        <div id="bulletin-output">
-          <!-- The generated bulletin will be displayed here -->
+    <!-- API Configuration Form -->
+    <div id="api-config">
+        <h3>API Configuration</h3>
+        <label for="gemini-key">Gemini API Key:</label>
+        <input type="text" id="gemini-key" placeholder="Enter Gemini API Key">
+        <label for="newsapi-key">News API Key:</label>
+        <input type="text" id="newsapi-key" placeholder="Enter News API Key">
+        <button id="save-api-keys">Save API Keys</button>
+    </div>
+
+    <div class="dashboard">
+        <div id="map-container">
+            <!--  Optional: Loading indicator (add/remove as needed)  -->
+            <div class="loading-indicator" style="display: none;">Loading...</div>
+            <div id="map"></div>
         </div>
+
+        <div id="sidebar">
+            <div id="bulletin-container">
+                <h2>News Bulletin</h2>
+                <button id="generate-button">Generate Bulletin</button>
+                <div id="bulletin-output">
+                    <!-- The generated bulletin will be displayed here -->
+                </div>
+            </div>
+
+            <div id="news-section">
+                <h2>News Feed</h2>
+                <div id="news-filters">
+                    <button class="filter-btn" data-category="pro-palestinian/human rights">🇵🇸 Pro-Palestinian</button>
+                    <button class="filter-btn" data-category="neutral">⚪ Neutral</button>
+                    <button class="filter-btn" data-category="pro-israeli">🇮🇱 Pro-Israeli</button>
+                    <button class="filter-btn" data-category="genocidal">💀 Genocidal</button>
+                    <button class="filter-btn" data-category="all">Show All</button>
+                </div>
+                <button id="fetch-news">Fetch News</button>
+                <div id="news-articles">
+                    <!-- Articles will appear here, most recent first -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+      <div id="graphs-container">
+          <h2>Data Visualizations</h2>
+          <canvas id="fatalitiesBarChart"></canvas>
+          <canvas id="fatalitiesLineChart"></canvas>
       </div>
-
-      <div id="news-section">
-        <h2>News Feed</h2>
-        <div id="news-filters">
-          <button class="filter-btn" data-category="pro-palestinian/human rights">🇵🇸 Pro-Palestinian</button>
-          <button class="filter-btn" data-category="neutral">⚪ Neutral</button>
-          <button class="filter-btn" data-category="pro-israeli">🇮🇱 Pro-Israeli</button>
-          <button class="filter-btn" data-category="genocidal">💀 Genocidal</button>
-          <button class="filter-btn" data-category="all">Show All</button>
-        </div>
-        <button id="fetch-news">Fetch News</button>
-        <div id="news-articles">
-          <!-- Articles will appear here, most recent first -->
-        </div>
-      </div>
-    </div>
   </div>
 
-  <!-- Add our new graphs container below the dashboard modules -->
-  <div id="graphs-container" style="padding: 20px;">
-    <h2>Data Visualizations</h2>
-    <div style="max-width: 800px; margin-bottom: 50px;">
-      <canvas id="fatalitiesBarChart"></canvas>
-    </div>
-    <div style="max-width: 800px; margin-bottom: 50px;">
-      <canvas id="fatalitiesLineChart"></canvas>
-    </div>
-  </div>
-  
   <!-- Library Scripts -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
   <script src="https://unpkg.com/leaflet.awesome-markers@2.0.4/dist/leaflet.awesome-markers.js"></script>
   <script src="https://unpkg.com/papaparse@5.3.2/papaparse.min.js"></script>
-  
-  <!-- Add Chart.js for easy chart rendering (if not already included) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- date-fns and the Chart.js adapter -->
   <script src="https://cdn.jsdelivr.net/npm/date-fns"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 
@@ -160,45 +357,46 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="{{ url_for('dashboard.static', filename='js/bulletin.js') }}"></script>
   <script src="{{ url_for('dashboard.static', filename='js/news.js') }}"></script>
-  <script src="{{ url_for('dashboard.static', filename='js/graphs.js') }}"></script> <!-- Ensure graphs.js is loaded last or after Chart.js -->
+  <script src="{{ url_for('dashboard.static', filename='js/graphs.js') }}"></script>
 
-  <!-- GSAP Animation Script -->
+  <!-- GSAP Animation (Optional, but nice touch) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       gsap.fromTo("body", { opacity: 0 }, { opacity: 1, duration: 1 });
     });
   </script>
 
-  <!-- New Script for API Key Configuration -->
+  <!-- API Key Configuration Script -->
   <script>
-    document.getElementById('save-api-keys').addEventListener('click', function() {
-      const geminiKey = document.getElementById('gemini-key').value;
-      const newsapiKey = document.getElementById('newsapi-key').value;
-      fetch('/dashboard/set_api_keys', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ gemini_key: geminiKey, newsapi_key: newsapiKey })
-      })
-      .then(response => response.json())
-      .then(data => {
-        alert(data.message);
-      })
-      .catch(err => {
-        alert('Error saving API keys: ' + err);
+      document.getElementById('save-api-keys').addEventListener('click', function() {
+        const geminiKey = document.getElementById('gemini-key').value;
+        const newsapiKey = document.getElementById('newsapi-key').value;
+        fetch('/dashboard/set_api_keys', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ gemini_key: geminiKey, newsapi_key: newsapiKey })
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message);
+        })
+        .catch(err => {
+          alert('Error saving API keys: ' + err);
+        });
       });
-    });
 
-    // When the user closes the page, clear API keys from the session
-    window.addEventListener('unload', function() {
-      const url = '/dashboard/clear_api_keys';
-      if(navigator.sendBeacon){
-        navigator.sendBeacon(url);
-      } else {
-        fetch(url, { method: 'POST', keepalive: true });
-      }
-    });
+      // When the user closes the page, clear API keys from the session
+      window.addEventListener('unload', function() {
+        const url = '/dashboard/clear_api_keys';
+        if(navigator.sendBeacon){
+          navigator.sendBeacon(url);
+        } else {
+          fetch(url, { method: 'POST', keepalive: true });
+        }
+      });
   </script>
 </body>
 </html>
