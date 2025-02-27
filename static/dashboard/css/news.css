@@ -1,45 +1,41 @@
-#news-section {
-  background: #fafafa;
-  padding: 20px;
-  border-top: 1px solid #ddd;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
-#news-articles {
-  max-height: 40vh;        /* Adjust height as needed */
-  overflow-y: auto;
-  margin-top: 20px;
-  background-color: #f9f9f9;
-  padding: 20px;
-  border: 1px solid #ddd;
-}
+/* news.css */
+
+/* News Article Styling */
 .news-article {
   background: #fff;
-  padding: 20px;
-  margin-bottom: 20px;
-  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #eee;
   border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
+
 .news-article h3 {
   margin: 0 0 10px 0;
-  font-size: 1.5em;
+  font-size: 1.3em;
   font-weight: bold;
-  color: #3d3d3d;
+  color: #3a3a3a;
+  line-height: 1.2;
 }
 
-#news-filters {
-  margin-bottom: 10px;
+.news-article p {
+  margin-bottom: 8px;
+  font-size: 0.95em;
+  color: #555;
+  line-height: 1.4;
 }
 
-.filter-btn {
-  background: #f0f0f0;
-  border: none;
-  padding: 6px 10px;
-  margin-right: 5px;
-  cursor: pointer;
-  border-radius: 3px;
+.news-article a {
+  color: #007bff;
+  text-decoration: none;
 }
 
-.filter-btn:hover {
-  background: #ccc;
+.news-article a:hover {
+  text-decoration: underline;
+}
+
+.news-article hr {
+  border: 0;
+  border-bottom: 1px dashed #ccc;
+  margin: 15px 0;
 }

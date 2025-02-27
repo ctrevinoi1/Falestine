@@ -1,44 +1,54 @@
-/* Bulletin container styling */
-#bulletin-container {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+/* bulletin.css */
+/* Styles are now largely integrated in main.css */
+
+/* Bulletin Section Container - Styles are in main.css */
+#bulletin-section {
+  /* Container styles in main.css */
 }
 
-#bulletin-container h2 {
-  font-size: 1.5em;
-  margin-bottom: 1em;
-  font-weight: bold;
-  color: #3d3d3d;
-}
-
-/* Bulletin output area */
+/* Bulletin Output Area */
 #bulletin-output {
-  background-color: #fafafa;
-  padding: 20px;
-  border: 1px solid #ddd;
+  /* Output area styles are in main.css */
+  /* Additional specific styling can be added here if needed */
 }
 
-/* Markdown heading styles */
-#bulletin-output h1, 
-#bulletin-output h2, 
-#bulletin-output h3 {
-  margin-top: 1em;
-  margin-bottom: 0.5em;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+/* Markdown heading styles - Example, adjust as needed */
+#bulletin-output h1,
+#bulletin-output h2,
+#bulletin-output h3,
+#bulletin-output h4,
+#bulletin-output h5,
+#bulletin-output h6 {
+  font-family: 'Arial', sans-serif; /* Example font */
+  color: #444;
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
 }
 
-/* Paragraph and list spacing */
 #bulletin-output p {
-  margin-bottom: 1em;
-  line-height: 1.5;
+  line-height: 1.6;
+  margin-bottom: 0.8em;
+  color: #555;
 }
 
 #bulletin-output ul,
 #bulletin-output ol {
-  padding-left: 2em;
-  margin-bottom: 1em;
+  padding-left: 25px;
+  margin-bottom: 0.8em;
 }
 
-/* Bold styling */
 #bulletin-output strong {
   font-weight: bold;
+}
+
+#bulletin-output em {
+  font-style: italic;
+}
+
+#bulletin-output blockquote {
+  border-left: 5px solid #ddd;
+  padding-left: 15px;
+  margin: 1.5em 10px;
+  color: #777;
+  font-style: italic;
 }

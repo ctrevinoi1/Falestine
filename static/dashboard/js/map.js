@@ -1,14 +1,11 @@
 // js/map.js
 
-// Initialize the map
 var map = L.map('map').setView([31.55, 34.45], 8);
 
-// Satellite base layer from Esri World Imagery
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-  attribution: 'Tiles &copy; Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+  attribution: 'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
 }).addTo(map);
 
-// Load GeoJSON boundaries from data/ps.json
 fetch('data/ps.json')
   .then(response => response.json())
   .then(geojsonData => {
@@ -27,7 +24,6 @@ fetch('data/ps.json')
 
 var markers = L.markerClusterGroup();
 
-// Parse the CSV event data from data/acled_data.csv
 Papa.parse("data/acled_data.csv", {
   header: true,
   download: true,
@@ -39,16 +35,17 @@ Papa.parse("data/acled_data.csv", {
         var markerIcon = L.AwesomeMarkers.icon({
           icon: 'exclamation-triangle',
           prefix: 'fa',
-          markerColor: 'blue',
+          markerColor: 'red', // Changed marker color to red for emphasis
           iconColor: 'white'
         });
         var marker = L.marker([lat, lon], { icon: markerIcon });
-        var popupContent = "<div style='font-family: Helvetica, Arial, sans-serif;'>" +
-                           "<strong>Event ID:</strong> " + event.event_id_cnty + "<br>" +
-                           "<strong>Date:</strong> " + event.event_date + "<br>" +
-                           "<strong>Type:</strong> " + event.event_type + " - " + event.sub_event_type + "<br>" +
-                           "<strong>Notes:</strong> " + event.notes + "<br>" +
-                           "<strong>Fatalities:</strong> " + event.fatalities +
+        var popupContent = "<div class='event-popup'>" +
+                           "<h3>Event Details</h3>" +
+                           "<p><strong>Event ID:</strong> " + event.event_id_cnty + "</p>" +
+                           "<p><strong>Date:</strong> " + event.event_date + "</p>" +
+                           "<p><strong>Type:</strong> " + event.event_type + " - " + event.sub_event_type + "</p>" +
+                           "<p><strong>Notes:</strong> " + event.notes + "</p>" +
+                           "<p><strong>Fatalities:</strong> " + event.fatalities + "</p>" +
                            "</div>";
         marker.bindPopup(popupContent);
         markers.addLayer(marker);
