@@ -170,7 +170,7 @@ def generate_bulletin():
         return jsonify({'error': 'Gemini API key not set.'}), 400
 
     # Scrape current articles
-    articles = scrape_articles()
+    articles = scrape_google_news()
     # Limit the number of articles processed to 5
     articles = articles[:5]
     context_text = ""
@@ -181,7 +181,7 @@ def generate_bulletin():
             content = content[:max_content_length] + "..."
         context_text += f"Title: {article['title']}\n"
         context_text += f"Source: {article['source']}\n"
-        context_text += f"Date: {article['date']}\n"
+        context_text += f"Date: {article['publish_date']}\n"
         context_text += f"Content: {content}\n\n"
 
     # Limit historical context to 1000 characters
@@ -273,20 +273,17 @@ def classify_article(text):
 
 def scrape_google_news():
     """
-    Replace the old Google RSS scraping approach with News API requests.
-    This function collects articles from the last 2 days for keywords:
-       - 'gaza', 'west bank', 'palestine'
-    Returns up to 50 articles total.
+    Scraping News API for Gaza and West Bank for today and yesterday.
+    Returns up to 2 articles per source.
     """
-    logger.debug("Scraping News API for Gaza, West Bank, and Palestine from the last 2 days.")
-    # Build queries and base parameters
-    queries = ["gaza", "west bank", "palestine"]
+    logger.debug("Scraping News API for Gaza and West Bank for today and yesterday.")
+    queries = ["gaza", "west bank"]
     all_articles = []
-    
-    # We'll fetch everything from the last 2 days
-    two_days_ago = (datetime.datetime.now() - datetime.timedelta(days=2)).strftime("%Y-%m-%d")
-    
-    # Use NEWSAPI key from session if present
+    today = datetime.datetime.now().date()
+    yesterday = today - datetime.timedelta(days=1)
+    allowed_dates = {today, yesterday}
+    from_date = yesterday.strftime("%Y-%m-%d")  # fetch articles from yesterday onwards
+
     NEWSAPI_KEY = session.get('NEWSAPI_KEY', os.getenv('NEWSAPI_KEY'))
     if not NEWSAPI_KEY:
         raise ValueError("NEWSAPI_KEY is not set. Please configure it.")
@@ -295,7 +292,7 @@ def scrape_google_news():
         url = (
             "https://newsapi.org/v2/everything?"
             f"q={query}&"
-            f"from={two_days_ago}&"
+            f"from={from_date}&"
             "language=en&"
             "sortBy=publishedAt&"
             f"apiKey={NEWSAPI_KEY}"
@@ -305,32 +302,52 @@ def scrape_google_news():
             data = response.json()
             articles_from_api = data.get("articles", [])
             for item in articles_from_api:
-                pub_date = item.get("publishedAt", datetime.datetime.now().isoformat())
+                pub_iso = item.get("publishedAt", "")
+                try:
+                    pub_date = datetime.datetime.fromisoformat(pub_iso.replace("Z", "+00:00")).date()
+                except Exception as e:
+                    logger.error(f"Error parsing publishedAt for article: {e}")
+                    continue
+
+                if pub_date not in allowed_dates:
+                    continue
+
                 content_text = item.get("description", "") or ""
                 if item.get("content", None):
                     content_text += f" {item['content']}"
+
+                source_name = item.get("source", {}).get("name", "Unknown")
+
                 article = {
                     "title": item.get("title", "Untitled"),
                     "url": item.get("url", ""),
-                    "publish_date": pub_date,
-                    "content": content_text
+                    "publish_date": pub_iso,
+                    "content": content_text,
+                    "source": source_name
                 }
                 all_articles.append(article)
         except Exception as e:
             logger.error(f"Error fetching articles for query '{query}': {str(e)}")
-    try:
-        all_articles.sort(key=lambda x: x["publish_date"], reverse=True)
-    except Exception as sort_err:
-        logger.warning(f"Error sorting articles: {sort_err}")
-    all_articles = all_articles[:10]
 
-    logger.debug(f"Total articles fetched from News API: {len(all_articles)}")
-
+    # Group articles by source and limit to 2 per source
+    articles_by_source = {}
     for article in all_articles:
+        source = article.get("source", "Unknown")
+        articles_by_source.setdefault(source, []).append(article)
+
+    final_articles = []
+    for source, articles in articles_by_source.items():
+        articles.sort(key=lambda x: x["publish_date"], reverse=True)
+        final_articles.extend(articles[:2])
+
+    final_articles.sort(key=lambda x: x["publish_date"], reverse=True)
+    logger.debug(f"Total articles fetched from News API after filtering: {len(final_articles)}")
+
+    for article in final_articles:
         classification = classify_article(article["content"])
         article["classification"] = classification
 
-    return all_articles
+    return final_articles
 
 @dashboard_bp.route('/scrape_news', methods=['POST'])
 def scrape_news():
