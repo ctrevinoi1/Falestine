@@ -2,8 +2,10 @@
 from flask import Flask, redirect, url_for
 from walkthrough.views import walkthrough_bp  # Create this in walkthrough/views.py
 from freefalestinev2.views import dashboard_bp   # Create this in freefalestinev2/views.py
+import os
 
 app = Flask(__name__)
+app.secret_key = os.getenv('FLASK_SECRET_KEY', 'uvberycn0ipwerhnoevh76589dfj')
 
 # Register blueprints; the walkthrough is at the root
 app.register_blueprint(walkthrough_bp, url_prefix='/')
