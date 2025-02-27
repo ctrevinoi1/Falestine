@@ -171,14 +171,24 @@ def generate_bulletin():
 
     # Scrape current articles
     articles = scrape_articles()
+    # Limit the number of articles processed to 5
+    articles = articles[:5]
     context_text = ""
+    max_content_length = 300
     for article in articles:
+        content = article.get('content', '')
+        if len(content) > max_content_length:
+            content = content[:max_content_length] + "..."
         context_text += f"Title: {article['title']}\n"
         context_text += f"Source: {article['source']}\n"
         context_text += f"Date: {article['date']}\n"
-        context_text += f"Content: {article['content']}\n\n"
+        context_text += f"Content: {content}\n\n"
 
+    # Limit historical context to 1000 characters
     historical_context = get_historical_context()
+    if len(historical_context) > 1000:
+        historical_context = historical_context[:1000] + "..."
+
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     logger.debug(f"Current time: {current_time}")
 
