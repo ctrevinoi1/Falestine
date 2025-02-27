@@ -170,7 +170,7 @@ def generate_bulletin():
         return jsonify({'error': 'Gemini API key not set.'}), 400
 
     # Scrape current articles
-    articles = scrape_google_news()
+    articles = scrape_google_news(classify=False)
     # Limit the number of articles processed to 5
     articles = articles[:5]
     context_text = ""
@@ -249,6 +249,10 @@ def classify_article(text):
     """
     candidate_labels = ["pro-palestinian/human rights", "neutral", "pro-israeli", "genocidal"]
     
+    # Limit the text length to 500 characters to reduce processing load
+    if len(text) > 500:
+        text = text[:500]
+
     # Run zero-shot classification with multi-label enabled.
     result = zero_shot_classifier(text, candidate_labels, multi_label=True)
     
@@ -271,7 +275,7 @@ def classify_article(text):
     
     return classifications
 
-def scrape_google_news():
+def scrape_google_news(classify=True):
     """
     Scraping News API for Gaza and West Bank for today and yesterday.
     Returns up to 2 articles per source.
@@ -343,9 +347,10 @@ def scrape_google_news():
     final_articles.sort(key=lambda x: x["publish_date"], reverse=True)
     logger.debug(f"Total articles fetched from News API after filtering: {len(final_articles)}")
 
-    for article in final_articles:
-        classification = classify_article(article["content"])
-        article["classification"] = classification
+    if classify:
+        for article in final_articles:
+            classification = classify_article(article["content"])
+            article["classification"] = classification
 
     return final_articles
 
