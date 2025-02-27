@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/livestream.css') }}">
   <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/resources.css') }}">
   <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/bulletin.css') }}">
+  <link rel="stylesheet" href="{{ url_for('dashboard.static', filename='css/apikeys.css') }}">
   
   <!-- Leaflet & Plugins CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -85,7 +86,7 @@
 </head>
 <body>
   <!-- API Configuration Form -->
-  <div id="api-config" style="padding: 10px; background: #f7f7f7; border-bottom: 1px solid #ccc;">
+  <div id="api-config">
     <h3>API Configuration</h3>
     <label for="gemini-key">Gemini API Key:</label>
     <input type="text" id="gemini-key" placeholder="Enter Gemini API Key">
