@@ -85,24 +85,14 @@
   </style>
 </head>
 <body>
-  <!-- Add title above API configuration -->
-  <div id="page-title">
-    <h1>Voices of Resilience: Live Dashboard for Gaza</h1>
-  </div>
-
-  <!-- Collapsible API Configuration Form -->
-  <div id="api-config-wrapper">
-    <div id="api-config-header">
-      <span id="api-config-title">API Configuration</span>
-      <span id="api-config-toggle" style="cursor: pointer;">&#9660;</span>
-    </div>
-    <div id="api-config-content">
-      <label for="gemini-key">Gemini API Key:</label>
-      <input type="text" id="gemini-key" placeholder="Enter Gemini API Key">
-      <label for="newsapi-key" style="margin-left:20px;">News API Key:</label>
-      <input type="text" id="newsapi-key" placeholder="Enter News API Key">
-      <button id="save-api-keys" style="margin-left:20px;">Save API Keys</button>
-    </div>
+  <!-- API Configuration Form -->
+  <div id="api-config">
+    <h3>API Configuration</h3>
+    <label for="gemini-key">Gemini API Key:</label>
+    <input type="text" id="gemini-key" placeholder="Enter Gemini API Key">
+    <label for="newsapi-key" style="margin-left:20px;">News API Key:</label>
+    <input type="text" id="newsapi-key" placeholder="Enter News API Key">
+    <button id="save-api-keys" style="margin-left:20px;">Save API Keys</button>
   </div>
 
   <div class="dashboard">
@@ -165,7 +155,7 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="{{ url_for('dashboard.static', filename='js/bulletin.js') }}"></script>
   <script src="{{ url_for('dashboard.static', filename='js/news.js') }}"></script>
-  <script src="{{ url_for('dashboard.static', filename='js/graphs.js') }}"></script>
+  <script src="{{ url_for('dashboard.static', filename='js/graphs.js') }}"></script> <!-- Ensure graphs.js is loaded last or after Chart.js -->
 
   <!-- GSAP Animation Script -->
   <script>
@@ -174,22 +164,26 @@
     });
   </script>
 
-  <!-- New Script for API Key Configuration and Collapsible Behavior -->
+  <!-- New Script for API Key Configuration -->
   <script>
-    // Toggle API configuration collapsible
-    document.getElementById('api-config-header').addEventListener('click', function() {
-      var content = document.getElementById('api-config-content');
-      var toggle = document.getElementById('api-config-toggle');
-      if (content.style.display === 'none' || content.style.display === '') {
-        content.style.display = 'block';
-        toggle.innerHTML = '&#9660;'; // down arrow
-      } else {
-        content.style.display = 'none';
-        toggle.innerHTML = '&#9654;'; // right arrow
-      }
+    document.getElementById('save-api-keys').addEventListener('click', function() {
+      const geminiKey = document.getElementById('gemini-key').value;
+      const newsapiKey = document.getElementById('newsapi-key').value;
+      fetch('/dashboard/set_api_keys', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ gemini_key: geminiKey, newsapi_key: newsapiKey })
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert(data.message);
+      })
+      .catch(err => {
+        alert('Error saving API keys: ' + err);
+      });
     });
-    // Hide API config content by default
-    document.getElementById('api-config-content').style.display = 'none';
 
     // When the user closes the page, clear API keys from the session
     window.addEventListener('unload', function() {
