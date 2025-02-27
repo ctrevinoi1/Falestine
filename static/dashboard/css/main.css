@@ -1,1 +1,20 @@
-
+/* Dashboard Title Styling */
+#dashboard-title {
+    text-align: center;
+    padding: 20px 0;
+    background: linear-gradient(90deg, #ce1126, #ffffff, #007a3d, #000000);
+    border-bottom: 4px solid #000; /* Optional accent */
+  }
+  
+  #dashboard-title h1 {
+    font-family: 'Arial Black', Gadget, sans-serif;
+    font-size: 2.5em;
+    margin: 0;
+    letter-spacing: 2px;
+    /* Create a striking text effect using background-clip */
+    background: -webkit-linear-gradient(#ce1126, #007a3d);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+  }
